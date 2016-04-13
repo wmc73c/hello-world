@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html>
+<title>CSS ToolTips Example</title>
+<!--
+  Note that comments in <style>..</style> section messes up the CSS styles.
+  Style classes:
+  .b, .btn{}        Button classes b and btn. border-radius must be gt border-width to show.
+  .ttp{}            Tooltip parent class... for anything with a tooltip child element to show...
+                    Not for the tooltip itself. Position must be Relative.
+  .ttp .ttx{}       Tooltip class ttx (only for children of elements with class ttp) in normal mode.
+                    This style locates invisible tooltip just below and to right of parent element.
+                    Background is required to prevent permanent elements from showing thru tooltip.
+  .ttp:hover .ttx{} Tooltip class ttx (only for children of elements with class ttp) in visible
+                    mode when pointer is hovering over parent element.
+-->
+<style>
+	.b, .btn{
+		background:     lightcyan;
+		border-radius:	4px;
+	}
+	.ttp{
+		display:        inline-block;
+		position:       relative;
+	}
+	.ttp .ttx{
+		background: 	#fff;
+		border:     	2px ridge #aa1100;
+		color:      	#000;
+		font-family:	sans-serif;
+		font-size:      10px;
+		font-style:     italic;
+		font-weight:	bold;
+		left:       	4px;
+		padding:    	0 4px;
+		position:   	absolute;
+		text-align: 	center;
+		top:        	100%;
+		/*transition: 	opacity 3s;
+		z-index:    	1;*/
+		opacity:    	0;
+		visibility: 	hidden;
+	}
+	.ttp:hover .ttx{
+		opacity:        1;
+		visibility:     visible;
+	}
+	.ttx2{
+		background: 	#fff;
+		border:     	2px ridge #aa1100;
+		color:      	#000;
+		display:        inline-block;
+		font-family:	sans-serif;
+		font-size:      10px;
+		font-style:     italic;
+		font-weight:	bold;
+		/*left:       	4px;*/
+		padding:    	0 4px;
+		position:   	relative;
+		text-align: 	center;
+		/*top:        	100%;*/
+		/*transition: 	opacity 3s;*/
+		z-index:    	1;
+		opacity:    	0;
+		visibility: 	hidden;
+	}
+	.ttp .ttxd{
+		background: 	#fff;
+		border:     	2px ridge #aa1100;
+		color:      	#000;
+		font-family:	sans-serif;
+		font-size:      10px;
+		font-style:     italic;
+		font-weight:	bold;
+		left:       	4px;
+		padding:    	0 4px;
+		position:   	absolute;
+		text-align: 	center;
+		top:        	100%;
+		z-index:    	1;
+		display:		none;
+	}
+	.ttp:hover .ttxb{
+		display:		block;
+	}
+	.ttp:hover .ttxi{
+		display:		inline;
+	}
+	.ttx3{
+		background: 	#fff;
+		border:     	2px ridge #aa1100;
+		color:      	#000;
+		font-family:	sans-serif;
+		font-size:      10px;
+		font-style:     italic;
+		font-weight:	bold;
+		left:       	4px;
+		max-width:		24ch;
+		padding:    	0 4px;
+		position:   	relative;
+		text-align: 	center;
+		top:        	100%;
+		z-index:    	1;
+		display:		none;
+	}
+</style>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+<script src="https://d3js.org/d3.v3.min.js"></script>
+
+<script>
+// execute this function after doc is loaded and ready...
+$(document).ready(
+	function(){
+		$('i#date').append( Date()+'<br><b>navigator.appVersion:</b> '+navigator.appVersion  );
+		$('b#script').append( this.URL );
+		$('select#pulldown').selectedIndex = 0;
+		// pass this html file to getdata to render its text to page.
+		try{
+			d3.text( this.URL, 'text/plain' )
+			  .get( function( error, data ){ getdata( error, data ); } );
+		}
+		catch(err){
+			$('b#status').text( 'ERROR-64-Failed to get and render script... '+err.message );
+		}
+	}
+);
+
+// render data to page.
+function getdata( status, data ){
+	console.log( '#70> d3.text Status='+status );
+	//console.log( '#71> data=\n'+data );
+	if (data === undefined){
+		$('b#status').html( "ERROR-73-Cannot get and render script. Try viewing page's source.<br>" );
+		return;
+	}
+	else if (status){
+		$('b#status').text( "Status: "+status+"<br>" );
+	}
+	else{
+		$('b#status').text( "" );
+	}
+	$('pre#script').text( data );
+}
+
+function btnHover(iid,set){
+	var tip	= document.getElementById(iid);
+	if (tip === undefined  ||  ! tip){
+		console.log( '#ERROR-148-No Such Id Name: "'+iid+'"');
+		return;
+	}
+	if (set === undefined)
+		set = 0;
+	
+	var o	= '(undef)';
+	if (tip.style === undefined)					o = '(.style undef)';
+	else if (tip.style.opacity === undefined)		o = '(.style.opacity undef)';
+	else											o = tip.style.opacity;
+	
+	var v	= '(undef)';
+	if (tip.style === undefined)					v = '(.style undef)';
+	else if (tip.style.visibility === undefined)	v = '(.stylevisibility undef)';
+	else											v = tip.style.visibility;
+	
+	console.log( '#158> tip id:'+tip.id+' ('+iid+','+set+'), tip:'+tip+', opacity:'+o+', visibility:'+v );
+	
+	if (! set){
+	}
+	else if (set < 0  ||  tip.style.opacity){
+		tip.style.opacity		= '';
+		tip.style.visibility	= '';
+	}
+	else{
+		tip.style.opacity		= 1;
+		tip.style.visibility	= 'visible';
+	}
+}
+// show: 1=>inline; 2=>block; 3=>inline-block; else=>none.
+function tglDisp(idn,show){
+	var tip	= document.getElementById(idn);
+	console.log( '#177> tip='+tip );
+	if (tip === undefined  ||  ! tip){
+		console.log( '#ERROR-178-No Such Id Name: "'+idn+'" ');
+		return;
+	}
+	var d = 'none';
+	if (show !== undefined){
+		if (show == 1)		d = 'inline';
+		else if (show == 2)	d = 'block';
+		else if (show == 3)	d = 'inline-block';
+	}
+	else{
+		show = 'undef';
+	}
+	tip.style.display = d;
+	console.log( '#177> tip id:'+tip.id+' ('+idn+','+show+'), tip:'+tip+', display:'+d );
+}
+</script>
+
+<body style="text-align:left;">
+
+<big><b>CSS Tooltips Example</b></big>
+&nbsp; &nbsp; &nbsp; 
+&nbsp; &nbsp; &nbsp; 
+<i id='date'></i>
+<hr>
+Move the mouse over these buttons...
+&nbsp; &nbsp; <br>
+
+<div class='ttp'>
+ <select id='pulldown' size=1>
+  <option value=1>One</option>
+  <option value=2>Two</option>
+  <option value=3>Three</option>
+ </select>
+ <i class='ttx'>Pulldown Tip A. Tip is a sibling of Select(Option) element.</i>
+</div>
+
+<div class='ttp'>
+  <span class="ttx">tip1... Tooltip&nbsp;text&nbsp;1 (button&nbsp;class=b, parent's&nbsp;class=ttp)<br>
+  Internet Explorer buttons need the ttp class applied to its parent<br>Click for tip4.</span>
+  <button class="b" onclick="btnHover('tip4',1)">Hover over<br> me (button).</button>
+</div>
+
+<div class='ttp'>
+  <b class="ttx">tip2... Tooltip&nbsp;text&nbsp;2 (button&nbsp;class=b, parent's&nbsp;class=ttp)<br>Click for 'tip3'.</b>
+  <button class="b" onclick="btnHover('tip3',1)">Or over<br> me (button).</button>
+</div>
+
+<div class='ttp'>
+  <i id="tip3" class="ttx">
+	tip3... Tooltip&nbsp;text&nbsp;3 
+	(button&nbsp;class=btn, parent's&nbsp;class=ttp)<br>
+	Click to lock/unlock tip3.
+  </i>
+  <button class="btn" onclick="btnHover('tip3',1)">And me too<br> (button).</button>
+</div>
+
+<div class='ttp'>
+ <input type='button' class="btn ttp" value='input button.'/>
+ <b id='tip4' class="ttx" style='min-width:30ch;'>
+  tip4... input with type button.
+  input has no children so tip
+  must be a sibling, which is
+  what Internet Explorer needs anyway.
+  Use value for label without &lt;BR&gt;.
+ </b>
+</div>
+
+<div class='ttp'>
+  <i id="tip5" class="ttxd ttxb">
+	tip5... using CSS display:none|block
+	(parent's&nbsp;class=ttp)<br>
+	(tip's&nbsp;class=ttxd,ttxb)
+  </i>
+  <button class="btn">Block Tip</button>
+</div>
+
+<div class='ttp'>
+  <i id="tip6" class="ttxd ttxi">
+	tip6... using CSS display:none|inline 
+	(parent's&nbsp;class=ttp)<br>
+	(tip's&nbsp;class=ttxd,ttxi))
+  </i>
+  <button class="btn">Inline Tip</button>
+</div>
+
+<br>
+
+<button class="btn ttp" onmouseover="btnHover('tip8',1)" onmouseout="btnHover('tip8',-1)">
+  But No ToolTip Here<br>with Internet Explorer.
+  <b id='tip7' class="ttx">
+   tip7... Internet Explorer buttons need the ttp class
+   applied to its parent (button&nbsp;class=btn ttp)<br>
+   Note: To Hide Tip... clear opacity and visibility.
+   (tip class: ttx)
+  </b>
+</button>
+<b id='tip8' class="ttx2" style='max-width:20ch;'>
+   tip8... Internet Explorer buttons need onmouseover,
+   onmouseout functions (tip&nbsp;class=ttx2)
+   Note: To Hide Tip... clear opacity and visibility.
+</b>
+
+<button class="btn ttp" onmouseover="tglDisp('tip10',1)" onmouseout="tglDisp('tip10',0)">
+  Display Sibling <br>Inline Tip<br>No Break
+  <b id='tip9' class="ttx">tip9... Inline <br>Sibling Tip. <br>Without Break. class=ttx</b>
+</button>
+<div id='tip10' class="ttx3" style='max-width:30ch;'>
+   tip10... Inline Sibling Tip with No Break. class=ttx3.
+</div>
+
+<button class="btn ttp" onmouseover="tglDisp('tip12',1)" onmouseout="tglDisp('tip12',0)">
+  Display Sibling <br>Inline Tip<br>with Break
+  <b id='tip11' class="ttx">tip11... Inline <br>Sibling Tip. <br>With Break class=ttx.</b>
+</button>
+<div id='tip12' class="ttx3" style='max-width:20ch;'>
+   tip12... Inline Sibling Tip <br>With Break, class=ttx3.
+</div>
+
+<button class="btn ttp" onmouseover="tglDisp('tip14',2)" onmouseout="tglDisp('tip14',0)">
+  Display Sibling <br>Block Tip
+  <b id='tip13' class="ttx">tip13... Block <br>Sibling Tip. class=ttx</b>
+</button>
+<div id='tip14' class="ttx3" style='max-width:30ch;'>
+   tip14... Block <br>Sibling Tip. class=ttx3
+</div>
+
+<button class="btn ttp" onmouseover="tglDisp('tip16',3)" onmouseout="tglDisp('tip16',0)">
+  Display Sibling <br>Block Tip
+  <b id='tip15' class="ttx">tip15... Inline-Block <br>Sibling Tip. class=ttx</b>
+</button>
+<div id='tip16' class="ttx3" style='max-width:30ch;'>
+   tip16... Inline-Block Sibling Tip. class=ttx3
+</div>
+
+<div class='ttp'>
+  <i id="tip99" class="ttx">tip99... class=ttx</i>
+  <button class="btn">99</button>
+</div>
+
+<hr>
+<b style='color:#aa0000;'>
+Suggested Tool Tip Usage: 
+Popup with CSS Style 'display:inline-block;' or 'opacity:1; visibility:visible;'.
+Popdown with 'display:none;' or 'opacity:; visibility:;' (Nil opacity and visibility).
+</b>
+<hr>
+<b>
+Thanks to... &nbsp; &nbsp; &nbsp; 
+<a target='_blank' href='http://www.w3schools.com'>w3schools.com</a>
+&nbsp; &nbsp; &nbsp; 
+<a target='_blank' href='http://www.w3schools.com/css/css_tooltip.asp'>
+  Tooltips using CSS</a>
+&nbsp; &nbsp; &nbsp; 
+<a target='_blank' href='http://www.w3schools.com/css/tryit.asp?filename=trycss_tooltip'>
+ Try it Yourself</a>
+</b>
+
+<hr>
+<big>
+<b   id='script'>Script URL: &nbsp; &nbsp; &nbsp; </b><br></big>
+<b   id='status'>ERROR-125-Failed to get and render script...<br></b>
+<pre id='script'>
+If this is Chrome, it typically complains silently (to its console log window)
+that 'Cross origin requests are only supported for protocol schemes: http, data,
+chrome, chrome-extension, https, chrome-extension-resource'.
+
+If this is Internet Explorer, it typically just complains that "Access is Denied".
+
+<b><i>Try viewing page's Source.</i></b>
+</pre>
+<hr>
+
+</body>
+</html>

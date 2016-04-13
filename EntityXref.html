@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>HTML Entity Cross Ref</title>
+<style>
+	a:link{
+		text-decoration:	none;
+		color:				#0000cc;
+	}
+	a:hover{
+		text-decoration:	underline;
+		color:				#00aa00;
+	}
+	button{
+		padding:			0 1px 0 1px;
+		background-color:	#bbdddd;
+		font:				normal 600 14px sans-serif;
+	}
+	button.m{
+		margin:				0;
+		padding:			0 2px 0 2px;
+	}
+	button.p{
+		margin:				0;
+		padding:			0;
+	}
+	i{
+		color:				#880000;
+	}
+	input{
+		vertical-align:		middle;
+	}
+	span{
+		text-align:			left;
+	}
+	span.bigf{
+		border:				1px ridge #aaaaaa;
+		font:				normal 700 16px sans-serif;
+		padding:			0px 5px 1px 5px;
+	}
+	table.z{
+		margin:				0;
+		border-width:		0px;
+		border-style:		ridge;
+		border-color:		#ffcc55;
+	}
+	td{
+		border-color:		#ffcc55;
+		border-style:		outset;
+		border-width:		1px;
+		padding:			4px 2px 1px 2px;
+		text-align:			left;
+	}
+	td.b{
+		border-width:		2px 1px 1px 0;
+		font:				normal 400 12px monospace;
+		text-align:			right;
+	}
+	td.c{
+		border:				2px ridge #999999;
+		font:				normal 400 40px sans-serif;
+		margin:				4px 2px 0 2px;
+		padding:			0px 5px 1px 5px; 
+		text-align:			center;
+	}
+	td.e{
+		border-width:		1px 0 1px 0;
+		font:				normal 700 30px/30px serif;
+		padding:			1px 1px 1px 2px;
+		text-align:			center;
+		vertical-align:		middle;
+	}
+	td.n{
+		border-width:		1px 1px 1px 0;
+		font:				normal 400 11px monospace;
+		padding:			1px 2px 1px 1px;
+		text-align:			right;
+	}
+	td.z{
+		border-width:		0;
+		text-align:			left;
+		padding:			3px 6px;
+		font:				normal 400 13px Arial,sans-serif;
+	}
+	th{
+		background-color:	#ffcc55;
+		border:				0;
+		padding:			1px;
+	}
+	th.c{
+		font-size:			18px;
+	}
+	th.s{
+		margin:				0;
+		padding:			0 2px 0 2px;
+		font-size:			small;
+	}
+	tr{
+		border:				0;
+		margin:				2px;
+		padding:			2px;
+	}
+	tr.b{
+		background-color:	#ddeeff;
+		margin:				2px;
+		padding:			2px;
+	}
+	.tooltip, .tt{
+	}
+	.ttp {
+		display:            inline-block;
+		position:           relative;
+	}
+	.ttb {
+		display:            block;
+		position:           relative;
+	}
+	.ttp .ttx {
+		background: 	#fff;
+		border:     	2px ridge #aa1100;
+		color:      	#000;
+		font-family:	sans-serif;
+		font-size:      small;
+		font-weight:    normal;
+		left:       	10px;
+		opacity:    	0;
+		max-width:		300px;
+		min-width:		120px;
+		padding:    	0 4px;
+		position:   	absolute;
+		text-align: 	center;
+		top:        	105%;
+		transition: 	opacity .1s;
+		visibility: 	hidden;
+		z-index:    	1;
+	}
+	.ttp:hover .ttx {
+		opacity:		1;
+		visibility:		visible;
+	}
+</style>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js">
+</script>
+
+<script>
+var kb		= Math.pow( 2, 17 );	// max base, then current base.
+var nn		= 1024;					// number of entities in xref table
+var nc		= 16;					// number entity columns in xref table
+var bc		= 20;					// number base columns in base table
+var nr		= kb / nn / bc;			// number rows in base table
+var bonk	= 0;					// audio element for error/warning alerts
+$(document).ready(
+	function(){
+		var T = $("table#base");
+		var x = ' id="baseDefault"';
+		var o = 2 * bc + 1;
+		var b = "";
+		b += "<tr><th colspan="+o+"> HTML Entity Base ";
+		b += "<small>(Decimal and <i>Hexadecimal</i>)</small>";
+		b += "</th></tr>";
+		T.append( b );
+		var k = 0;
+		for (var jr=0; jr<nr; jr++){
+			var b = '<tr';
+			if (jr % 2) b += ' class="b"';
+			b += '>';
+			//b += '<td>'+jr+':'+k+'</td>';
+			for (var jc=0; jc<bc; jc++){
+				b += '<th></th>';
+				b += '<td class="b" onclick="buildTable('+k+')">';
+				b += k+"<br><i>"+k.toString(16)+"</i>";
+				b += '</td>';
+				k += nn;
+				x =  '';
+			}
+			b += "<th></th>";
+			b += '</tr>';
+			T.append( b );
+		}
+		b = "<tr><th colspan="+o+"></th></tr>";
+		T.append( b );
+				
+		iEntity.value	= '';
+		iText.value		= '';
+		lEntity.checked	= false;
+		buildTable( 0 );
+		$("span#date").text( Date() );
+		//var k = new Audio( 'file://C:\Users\wcody\Documents\ding.mp3' );
+		//if (k.play !== undefined){
+		//	bonk = k;
+		//	j = bonk.load();
+		//	bonk.controls = true;
+		//}
+		//console.log( "#155> k="+k+", bonk="+bonk+", j="+j );
+		var k = document.getElementById("bonk");
+		if (k.play !== undefined)
+			bonk = k;
+		//console.log( "#162> k="+k+", bonk="+bonk );
+		setFontFamily( setFontFamilyDefault );
+		setFontStyle(  setFontStyleDefault,  0 );
+		setFontWeight( setFontWeightDefault, 0 );
+	}
+);
+
+function buildTable( j ){
+	// Entity List
+	if (j < 0)
+		j = 0;
+	kb    = j;
+	var S = $("table#entityList");
+	var n = j + nn;
+	var r = n - 1;
+	var x = 128 / nc;
+	var o = 3 * nc -5;
+	b = '';
+	S.text( b );
+	b += '<tr><th></th>';
+	b += '<th colspan=2 class="c" align="left" ><small>'+j+'&nbsp;<i>'+j.toString(16)+'</i></small></th>';
+	b += '<th colspan='+o+' rowspan=2><big>HTML Entity to Decimal and <i>Hexadecimal</i> Cross Reference</big></th>';
+	b += '<th colspan=2 class="c" align="right"><small>'+r+'&nbsp;<i>'+r.toString(16)+'</i> &nbsp;</small></th>';
+	b += '<th></th></tr>';
+	S.append( b );
+	//o += 6;
+	r =  0;
+	while (j < n){
+		//if (r  &&  r % x == 0)
+		//	S.append( '<tr><th colspan='+o+'></th></tr>' );
+		if (r % x == 0){
+			var q = j + 127;
+			var b = '';
+			b += '<tr><th></th>';
+			b += '<th class="s" colspan=2 align="left" >'+j+'&nbsp;<i>'+j.toString(16)+'</i></th>';
+			if (r) b += '<th class="s" colspan='+o+'> (Decimal and <i>Hexadecimal</i>) </th>';
+			b += '<th class="s" colspan=2 align="right">'+q+'&nbsp;<i>'+q.toString(16)+'</i> &nbsp;</th>';
+			b += '<th></th></tr>';
+			S.append( b );
+		}
+		r += 1;
+		var b = '<tr';
+		if (r % 2) b += ' class="b"';
+		b += '>';
+		for (var k=0; k<nc; k++){
+			b += '<th></th>';
+			b += '<td class="e" onclick="setEnt('+j+')">&#'+j+';</td>';
+			b += '<td class="n" onclick="setEnt('+j+')">'+j+'<br>';
+			b += '<i>'+j.toString(16)+'</i>';
+			b += '</td>';
+			//console.log( b );
+			j ++;
+		}
+		b += '<th></th>';
+		b += '</tr>';
+		S.append( b );
+	}
+	S.append( '<tr><th colspan='+o+'></th></tr>' );
+}
+
+function increTable( d ){
+	buildTable( kb + d );
+}
+
+function zbonk( v ){
+	if (v < 0){
+		v = 0;
+		if (bonk)
+			bonk.play();
+	}
+	return v;
+}
+
+var xc = 0;
+function xcolor(){
+	xc += 1;
+	var c = '#5cf';
+	if		(xc == 1)	c = "#5fc";
+	else if	(xc == 2)	c = '#f5c';
+	else if (xc == 3)	c = '#fc5';
+	else				xc = 0;
+	$("th").css( 'background', c );
+}
+
+var entity = '';
+function xvertEnt( delta ){
+	if (delta === undefined)
+		delta = 0;
+	var b = '#198>';
+	var x = '';
+	var d = '';
+	var e = iEntity.value;				b += " 0'"+e+"'";
+	if (! e)
+		e = '0';
+	var e = e.replace( /^\&/, '' );		b += " 1'"+e+"'";
+	var e = e.replace( /^\#/, '' );		b += " 2'"+e+"'";
+	var e = e.replace( /\;$/, '' );		b += " 3'"+e+"'";
+	if (e.match( /^x[\da-f]+$/i )){
+		e = '0x'+e.replace(/^x/i,'');	b += " 4'"+e+"'";
+		e = parseInt(e);				b += " 5'"+e+"'";
+		e+= delta;						b += " 6'"+e+"'";
+		e = zbonk( e );
+		d = '&#'+e+';';
+		e = e.toString(16);
+		x = '&#x'+e+';';
+		e = '#x'+e;						b += " 7'"+e+"'";
+	}
+	else if (e.match( /^[\da-f]+$/i )){
+		e = parseInt( e );				b += " 8'"+e+"'";
+		e+= delta;						b += " 9'"+e+"'";
+		e = zbonk( e );
+		x = '&#x'+e.toString(16)+';';
+		d = '&#'+e+';';
+		e = '#'+e;						b += " a'"+e+"'";
+	}
+	if (delta)
+		iEntity.value = e;
+	//if (! d)
+	//	d = e;
+	e = '&'+e+';';						b += " ='"+e+"', d='"+d+"', x='"+x+"'";
+	entity = e;
+	if (lEntity.checked)
+		console.log( b );
+	$("#oEntity").html( e );
+	$("span#eEntity").text( e );
+	$("span#dEntity").text( d );
+	$("span#xEntity").text( x );
+}
+
+function setEnt( e ){
+	iEntity.value = e;
+	xvertEnt();
+}
+
+function showFont(){
+	var P = $('td.e:last');
+	var s = P.css("font-style");
+	var w = P.css("font-weight");
+	var z = P.css("font-size");
+	var h = P.css("line-height");
+	var f = P.css("font-family");
+
+	S = $("#fontId");
+	S.text( s+" "+w+" "+z+"/"+h+" "+f );
+}
+
+function setFontFamily(eid){
+	var f = eid.value;
+	if (! eid.checked)
+		eid.checked = true;
+	if (lEntity.checked)
+		console.log( '#344> setFontFamily( '+eid+' ) => "'+f+'"' );
+	$("td.e").css(			'font-family', f );
+	$("td#oText").css(		'font-family', f );
+	$("td#oEntity").css(	'font-family', f );
+	showFont();
+}
+
+// eid: element Id; chk: optional checked mode.
+function setFontStyle(eid,chk){
+	if (chk !== undefined)
+		eid.checked = chk;
+	var f = ( eid.checked ? 'italic' : 'normal' );
+	if (lEntity.checked)
+		console.log( '#354> setFontStyle( '+eid+' ) => "'+f+'"' );
+	$("td.e").css(			'font-style', f );
+	$("td#oText").css(		'font-style', f );
+	$("td#oEntity").css(	'font-style', f );
+	showFont();
+}
+
+// eid: element Id; chk: optional checked mode.
+function setFontWeight(eid,chk){
+	if (chk !== undefined)
+		eid.checked = chk;
+	var f = ( eid.checked ? 'bold' : 'normal' );
+	if (lEntity.checked)
+		console.log( '#364> setFontWeight( '+eid+' ) => "'+f+'"' );
+	$("td.e").css(			'font-weight', f );
+	$("td#oText").css(		'font-weight', f );
+	$("td#oEntity").css(	'font-weight', f );
+	showFont();
+}
+
+function cvertKeyUp( event ){
+	if (event.keyCode !== undefined  &&  event.keyCode == 13) xvertEnt();
+}
+
+function xlateKeyUp( event ){
+	//console.log( '#286> keyCode='+event.keyCode )
+	if (event.keyCode !== undefined  &&  event.keyCode == 13) translate();
+}
+
+function translate( event ){
+	var v = iText.value;
+	if (event  &&  event.ctrlKey  &&  event.shiftKey)
+		v = '&#128111;<br>&#128089;<br>&#8252;<br>&#10249;';
+	//else if (! v)
+	//	v = '';
+	$("#oText").html( v );
+	if (lEntity.checked)
+		console.log( "#253> iText.value='"+v+"'" );
+}
+
+function append(){
+	var t = iText.value;
+	var v = t + entity;
+	iText.value = v;
+	$("#oText").html( v );
+	if (lEntity.checked)
+		console.log( "#262> iText.value='"+v+"', ent='"+entity+"'" );
+}
+
+</script>
+</head>
+<body>
+
+<center>
+<h1>
+ HTML Entity Cross Reference
+</h1>
+
+<table border=0 cellspacing=0 cellpadding=0 style="margin:0;">
+ <tr class='ttp'>
+  <td style="border:1; background:#ddeeff;">
+   &nbsp;
+   <span style='font:normal 600 12px sans-serif'>W3 Schools Entity Refs:</span>
+   <span style='font:italic 600 12px sans-serif'>&nbsp;
+    <a target="_blank" href="http://www.w3schools.com/charsets/ref_utf_arrows.asp">Arrow</a>,
+    <a target="_blank" href="http://www.w3schools.com/charsets/ref_utf_block.asp">Block</a>,
+    <a target="_blank" href="http://www.w3schools.com/charsets/ref_utf_box.asp">Box</a>,
+    <a target="_blank" href="http://www.w3schools.com/charsets/ref_utf_currency.asp">Currency</a>,
+    <a target="_blank" href="http://www.w3schools.com/charsets/ref_utf_dingbats.asp">DingBats</a>,
+    <a target="_blank" href="http://www.w3schools.com/charsets/ref_utf_geometric.asp">Geometric</a>,
+    <a target="_blank" href="http://www.w3schools.com/charsets/ref_utf_letterlike.asp">Letterlike</a>,
+    <a target="_blank" href="http://www.w3schools.com/charsets/ref_utf_math.asp">Math</a>,
+    <a target="_blank" href="http://www.w3schools.com/charsets/ref_utf_symbols.asp">Miscellaneous</a>,
+    <a target="_blank" href="http://www.w3schools.com/charsets/ref_utf_punctuation.asp">Punctuation</a>,
+    <a target="_blank" href="http://www.w3schools.com/charsets/ref_html_entities_4.asp">HTML4</a>.
+    &nbsp;
+    <i class='ttx'>Open W3 School's Entity Reference pages.</i>
+   </span>
+  </td>
+ </tr>
+</table>
+
+<span class='ttp' style='margin:0 20px 4px 0;'>
+ <i class='ttx'>Write event info to the Console Log window.</i>
+ <input  id='lEntity' type='checkbox'/>Log
+</span>
+
+<span class='ttp' style='margin:0 0 4px 20px;'> &nbsp; 
+ <button onclick='xcolor()' style='font-weight:normal;'>Bg</button>
+ <i class='ttx'>Cycle thru Table Background colors.</i> &nbsp; 
+</span>
+<br>
+
+<div class='ttp'>
+ <i class='ttx' style='top:100%'>Click to reset the HTML Entity Cross Reference table range.</i>
+ <table id='base' border=1 cellspacing=0 style='margin-width:0px;'>
+ </table>
+</div>
+
+<table class='z' style='margin:0px;'>
+<tr>
+<td  class='z'>
+ <big><b>
+ Entity
+ <span class='ttp'>
+  <i  class='ttx'>Specify an Entity Symbol by either a decimal number, a hexadecimal number 
+                  following 'x', or a nominal id such as 'gt'.</i>
+  <input  id='iEntity' type='text' size=12 onkeyup="cvertKeyUp(event)"/>
+ </span>
+ <span class='ttp'>
+  <button onclick='iEntity.value="";' style='padding:0; background:#ffaa11;'>c</button>
+  <i class='ttx'>Clear the Entity text field.</i>
+ </span>
+ <span class='ttp'>
+  <button onclick='xvertEnt(-16)' class='m'>-16</button>
+  <i class='ttx'>Decrease the Entity Symbol index by 16.</i>
+ </span>
+ <span class='ttp'>
+  <button onclick='xvertEnt(-1 )' class='m'>-1</button>
+  <i class='ttx'>Decrease the Entity Symbol index by 1.</i>
+ </span>
+ <span class='ttp'>
+  <button onclick='xvertEnt( 0 )'>Display</button>
+  <i class='ttx'>Display the given Entity Symbol.</i>
+ </span>
+ <span class='ttp'>
+  <button onclick='xvertEnt( 1 )' class='p'>+1</button>
+  <i class='ttx'>Increase the Entity Symbol index by 1.</i>
+ </span>
+ <span class='ttp'>
+  <button onclick='xvertEnt( 16)' class='p'>+16</button>
+  <i class='ttx'>Increase the Entity Symbol index by 16.</i>
+ </span>
+ &nbsp; &nbsp;
+ </b></big>
+</td>
+<td id='oEntity' class='c'>
+&nbsp; &nbsp;
+</td>
+<td class='z'>
+ &nbsp; &nbsp;
+ <span   id='eEntity' class='bigf'>&nbsp;</span>
+ &nbsp; &nbsp; Dec:
+ <span   id='dEntity' class='bigf'>&nbsp;</span>
+ &nbsp; &nbsp; Hex:
+ <span   id='xEntity' class='bigf'>&nbsp;</span>
+ &nbsp; &nbsp; &nbsp; 
+ <span class='ttp'>
+  <button onclick='append()' class='m'>Append</button>
+  <i class='ttx'>Append the current Entity Symbol to the Translate Text field.</i>
+ </span>
+</td></tr>
+</table>
+
+<table class='z' style='margin:-12px 0 4px 0;'>
+<tr>
+<td class='z'>
+ <big><b>
+ Translate Text
+ <span class='ttp'>
+  <input  id='iText' type='text' size=40 onkeyup="xlateKeyUp(event)">
+  <i class='ttx'>Specify a text string using HTML tags and codes.</i>
+ </span>
+ <span class='ttp'>
+  <button onclick='iText.value="";' style='padding:0; background:#ffaa11;'>c</button>
+  <i class='ttx'>Clear the Text field.</i>
+ </span>
+ <span class='ttp'>
+  <button onclick='translate( event )'>to HTML</button>
+  <i class='ttx'>Translate Text to Box as HTML.</i>
+ </span>
+ </b></big>
+</td>
+<td id='oText' class='c'>
+&nbsp; &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp;  &nbsp; &nbsp; 
+</td>
+</tr>
+</table>
+
+<table border=1 cellspacing=0 cellpadding=0>
+ <tr style="border:1; background:#ddeeff; vertical-align:middle; padding:0; margin:0;">
+  <td class='e'   style='border-width:0; vertical-align:middle; font-size:14px; padding: 0 0 1px 0;'>
+   &nbsp; Font:
+  </td>
+  <td class='ttp' style='border-width:0; vertical-align:middle;'>
+   <input type='checkbox' id='setFontStyleDefault'  style='margin:5px 0 0 4px;' onclick="setFontStyle( this )">
+   <i class='ttx'>Toggle Entity Font Style (Italic or Normal)</i>
+  </td>
+  <td class='ttp' style='border-width:0; vertical-align:middle;'>italic</td>
+  <td class='ttp' style='border-width:0; vertical-align:middle;'>
+   <input type='checkbox' id='setFontWeightDefault' style='margin:5px 0 0 4px;' onclick="setFontWeight( this )">
+   <i class='ttx'>Toggle Entity Font Weight (Bold or Normal)</i>
+  </td>
+  <td class='ttp' style='border-width:0; vertical-align:middle;'>bold</td>
+  <td class='ttp' style='border-width:0; vertical-align:middle;'>
+   <input id='setFontFamilyDefault'
+          type='radio' name='efont' value='serif'		onclick="setFontFamily( this )">serif
+   <input type='radio' name='efont' value='sans-serif'	onclick="setFontFamily( this )">sans-serif
+   <input type='radio' name='efont' value='monospace'	onclick="setFontFamily( this )">monospace
+   <input type='radio' name='efont' value='cursive'		onclick="setFontFamily( this )">cursive
+   <input type='radio' name='efont' value='script'		onclick="setFontFamily( this )">script
+   <input type='radio' name='efont' value='decorative'	onclick="setFontFamily( this )">decorative
+   <input type='radio' name='efont' value='fantasy'		onclick="setFontFamily( this )">fantasy
+   &nbsp; &nbsp;
+   <b><i id='fontId' style='padding:0 8px;'>normal whatever</i></b>
+   <i class='ttx'>Toggle Entity Font Family</i>
+  </td>
+ </tr>
+</table>
+
+<div class='ttp' style='margin:6px;'>
+ <button onclick='increTable(-1024 )'>-1024&nbsp; <i>-400</i></button>
+ <button onclick='increTable( -512 )'> -512&nbsp; <i>-200</i></button>
+ <button onclick='increTable( -256 )'> -256&nbsp; <i>-100</i></button>
+ <button onclick='increTable( -128 )'> -128&nbsp; <i>-80 </i></button>
+ &nbsp; &nbsp; &nbsp; <b>Increment Entity Base</b> &nbsp; &nbsp; &nbsp;
+ <button onclick='increTable(  128 )'> +128&nbsp; <i>+80 </i></button>
+ <button onclick='increTable(  256 )'> +256&nbsp; <i>+100</i></button>
+ <button onclick='increTable(  512 )'> +512&nbsp; <i>+200</i></button>
+ <button onclick='increTable( 1024 )'>+1024&nbsp; <i>+400</i></button>
+ <i class='ttx'>Increment the Index range for the Entity Table.</i>
+</div>
+
+<table id="entityList" border=1 cellpadding=2 cellspacing=0>
+</table>
+
+<div style='margin:6px;'>
+<button onclick='increTable(-1024 )'>-1024&nbsp; <i>-400</i></button>
+<button onclick='increTable( -512 )'> -512&nbsp; <i>-200</i></button>
+<button onclick='increTable( -256 )'> -256&nbsp; <i>-100</i></button>
+<button onclick='increTable( -128 )'> -128&nbsp; <i>-80 </i></button>
+&nbsp; &nbsp; &nbsp; <b>Increment Entity Base</b> &nbsp; &nbsp; &nbsp;
+<button onclick='increTable(  128 )'> +128&nbsp; <i>+80 </i></button>
+<button onclick='increTable(  256 )'> +256&nbsp; <i>+100</i></button>
+<button onclick='increTable(  512 )'> +512&nbsp; <i>+200</i></button>
+<button onclick='increTable( 1024 )'>+1024&nbsp; <i>+400</i></button>
+</div>
+
+<table style='background:#e7f7ff; border:1px outset; margin:6px;' cellpadding=3 cellspacing=0 border=0>
+<tr><td class='z' colspan=2>
+<center><pre style='font:normal 400 24px/27px monospace; color:#331188; margin:0px;'>
+&nbsp;&#9556;&#9552;&#9552;&#9552;&#9559;
+&#9556;&#9571;<b><i>IAI</i></b>&#9553;
+&#9553;&#9562;&#9552;&#9552;&#9574;&#9565;
+&#9562;&#9552;&#9552;&#9552;&#9565;&nbsp;
+</pre></center>
+</td></tr>
+<tr><td class='z'><b>Entities:</b></td><td class='z'>9552, 9556, 9559, 9562, 9565, 9571, 9574</td></tr>
+<tr><td class='z'><b>Font:    </b></td><td class='z'>normal 400 26px/27px monospace</td></tr>
+</table>
+
+</center>
+<br><small><span id='date'></span></small>
+
+<audio id='bonk'>
+  <source src='file://C:\Users\wcody\Documents\ding.mp3' type='audio/mpeg'/>
+  No Support for this Audio.
+</audio>
+
+<audio src='file://C:\Users\wcody\Documents\ding.mp3'>
+ No Audio.
+</audio>
+
+</body>
+</html>

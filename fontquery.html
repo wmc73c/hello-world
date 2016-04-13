@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>HTML Font Query</title>
+<style>
+	.bg {
+		background-color:	#d8eeff;
+	}
+	.redfg {
+		color:				#bb0000;
+	}
+	.grey {
+		background-color:	#aaaaaa;
+	}
+	button {
+		color:				#660000;
+		background-color:	#ffbb77;
+		padding:			0px 10px 0px 8px;
+		text-align:			center;
+		font:				italic 16px Arial,sans-serif;
+	}
+	em {
+		color:				#bb0000;
+	}
+	input {
+		background-color:	#ddeedd;
+		font:				16px monospace;
+		padding:			0px 4px 0px 2px;
+		text-align:			left;
+	}
+	q {
+		color:				#00bb00;
+	}
+	td {
+		border:				1px ridge #cccccc;
+		text-align:			center;
+		padding:			1px 3px 1px 3px;
+	}
+	td.iai {
+		border-width:		0px;
+		text-align:			left;
+		padding:			0px;
+		font:				normal 10px Arial,sans-serif;
+	}
+	td.tl {
+		border:				1px ridge #999999;
+		text-align:			left;
+		vertical-align:		top;
+	}
+	td.tle {
+		border:				1px ridge #999999;
+		text-align:			left;
+		vertical-align:		top;
+		background-color:	#cccccc;
+	}
+	td.u {
+		font-size:			small;
+	}
+	th {
+		background-color:	#ffcc55;
+		border:				1px ridge #777777;
+	}
+	tr.iai {
+		border-width:		0px;
+		padding:			0px;
+	}
+	tr.ics0 {
+		background-color:	#e0f0ff;
+		font-family:		monospace;
+	}
+	tr.ics1 {
+		font-family:		monospace;
+		font-size:			xx-large;
+	}
+</style>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js">
+</script>
+
+<script>
+$(document).ready(
+	function(){
+		resetAll();
+		// append pixel sizes to Size select...
+		var a = ['xx-small', 'x-small', 'small', 'medium', 'large', 'x-large', 'xx-large'];
+		var F = $("select#size");
+		var L = $("select#line");
+		//L.append( "<option></option><option>normal</option>");
+		var n = a.length;
+		if (clog.checked) console.log("#61> select size "+F+", n="+n)
+		for (var j=0; j<n; j++){
+			F.append("<option>"+a[j]+"</option>");
+		}
+		for (var j=0; j<77; j++){
+			if (j > 3) F.append("<option>"+j+"px</option>");
+			L.append("<option>"+j+"px</option>");
+		}
+
+		// get list of fonts, and sort alphabetically
+		var ieFonts = [];
+		n = 0;
+		if (dlgHelper.fonts){
+			n = dlgHelper.fonts.count;
+		}
+		for (var j=0; j<n; j++){
+			ieFonts[j] = dlgHelper.fonts(j+1);
+		}
+		if (clog.checked) console.log("#79> dlgHelper fonts: n="+n)
+		//ieFonts.sort(function (a, b){ return a.toLowerCase().localeCompare(b.toLowerCase()); });
+		ieFonts.sort( sorter );
+
+		//var fontTestString = 'ABC abc 123';
+		// create IE Family output list...
+		n = ieFonts.length;
+		F = $("select#ieFamily");
+		if (clog.checked) console.log( "#87> select ieFamily "+F+": n="+n )
+		for (var j=0; j<n; j++) {
+			F.append("<option>"+ieFonts[j]+"</option>");
+		}
+		
+		// create Non-IE Family output list...
+		var a =
+		[ 'Andale Mono, MONO'
+		, 'Arial'
+		, 'Arial Black'
+		, 'Arial Narrow'
+		, 'Avant Garde'
+		, 'Book Antiqua'
+		, 'Bookman'
+		, 'Bookman Old Style'
+		, 'Brush Script MT'
+		, 'Bullets'
+		, 'Calibri'
+		, 'Calisto'
+		, 'Calisto MT'
+		, 'Cambria'
+		, 'Candara'
+		, 'Century'
+		, 'Century Gothic'
+		, 'Century Schoolbook'
+		, 'Charcoal'
+		, 'Chicago'
+		, 'Chiller'
+		, 'Comic Sans MS'
+		, 'Common Bullets'
+		, 'Consolas, MONO'
+		, 'Constantia'
+		, 'Copperplate Gothic Light'
+		, 'Courier, MONO'
+		, 'Courier New, MONO'
+		, 'Corbel'
+		, 'Cursive'
+		, 'Dingbats'
+		, 'Elephant'
+		, 'FangSong, MONO'
+		, 'Fantasy'
+		, 'Forte'
+		, 'Freestyle'
+		, 'Freestyle Script'
+		, 'Garamond'
+		, 'Geneva'
+		, 'Georgia'
+		, 'Gill'
+		, 'Gill Sans'
+		, 'Helvetica'
+		, 'Impact'
+		, 'Kristen ITC'
+		, 'LilyUPC'
+		, 'Lucida Bright'
+		, 'Lucida Calligraphy'
+		, 'Lucida Console, MONO'
+		, 'Lucida Fax'
+		, 'Lucida Grande'
+		, 'Lucida Handwriting'
+		, 'Lucida Sans Typewriter, MONO'
+		, 'Lucida Sans Unicode'
+		, 'Luxi'
+		, 'Luxi Mono, MONO'
+		, 'Luxi Sans'
+		, 'Luxi Serif'
+		, 'Magneto'
+		, 'Microsoft Sans Serif'
+		, 'Miriam'
+		, 'Miriam Fixed, MONO'
+		, 'Modern'
+		, 'Monaco, MONO'
+		, 'Monaco Fixed, MONO'
+		, 'Monotype'
+		, 'Monotype Corsiva'
+		, 'MS Sans Serif'
+		, 'MS Serif'
+		, 'New York'
+		, 'News Gothic MT'
+		, 'OCR A Extended'
+		, 'Onyx'
+		, 'Palatino'
+		, 'Palatino Linotype'
+		, 'Rage'
+		, 'Rockwell'
+		, 'Rod, MONO'
+		, 'Script'
+		, 'Segoe'
+		, 'Segoe MT'
+		, 'Segoe Print'
+		, 'Segoe Script'
+		, 'Segoe UI Symbol'
+		, 'Stencil'
+		, 'Symbol'
+		, 'Tahoma'
+		, 'Times'
+		, 'Times New Roman'
+		, 'Trebuchet'
+		, 'Trebuchet MS'
+		, 'Utopia'
+		, 'Vani'
+		, 'Verdana'
+		, 'Webdings'
+		, 'Wide Latin'
+		, 'Wingdings'
+		, 'Zapf Dingbats'
+		];
+		//a.sort( function (a, b){ return a.toLowerCase().localeCompare(b.toLowerCase()); } );
+		a.sort( sorter );
+		
+		// if there are ieFonts...
+		n = ieFonts.length;
+		if (n){
+			// mark other fonts that are missing from ie fonts...
+			var k  = a.length;
+			var jk = 0;
+			var jn = 0;
+			while (jk<k){
+				// remove any ',<tag>' suffix from a[jk]...
+				v = a[jk];	
+				var c = v.search( /,/ );
+				if (c > 0) v = v.slice( 0, c );
+				while (jn < n  &&  ieFonts[jn] < v){
+					jn += 1;
+				}
+				if (jn >= n  ||  ieFonts[jn] != v){
+					a[jk] += ",*";
+				}
+				jk += 1;
+			}
+			var b = "#216> other: jk="+jk+"/"+k+", ie: jn="+jn+"/"+n;
+			if (jn < n) b += " ('"+ieFonts[jn]+"' was last)";
+			if (clog.checked) console.log( b );
+		}
+		
+		// render the other family fonts...
+		n = a.length;
+		F = $("select#otherFamily");
+		if (clog.checked) console.log( "#224> select otherFamily "+F+": n="+n )
+		for (var j=0; j<n; j++) {
+			F.append(b+"<option>"+a[j]+"</option>");
+		}
+		
+		// append samples of each font...
+		var t = 'Other';
+		if (ieFonts.length){
+			a = ieFonts;
+			t = 'IE';
+		}
+		F = $("table#fontList");
+		n = a.length;
+		if (clog.checked) console.log( "#237> table fontList "+F+": n="+n+", k="+k )
+		F.append("<caption><big><b class='redfg'>"+n+" "+t+" Font Families:</caption>");
+		var t0 = "<td style='background:#e0eeff;'>&nbsp;</td>";
+		var t1 = "<td style='background:#ccddee;'>&nbsp;</td>";
+		var t = '<td class="tl" onclick="resetAll();changeFont(%font-family%,%FAMILY1%)">';
+			t = t.replace( /%/g, "'" );
+			t += "<small class='redfg'>FAMILY2</small><br>";
+			t += '<div style="font-family:FAMILY1;">FAMILY1</td>';
+		if (clog.checked) console.log( '#245> t='+t );
+		var j = 0;
+		var r = 0;
+		while (j < n){
+			var b = '<tr';
+			r += 1;
+			if (r %2) b += " class='bg'";
+			b += '>';
+			for (var k=0; k<5; k++){
+				if (k) b+= t1;
+				//b+= '<td>'+j+'</td>';
+				if (j < n)	b += xfamily( t, a[j] );
+				else		b += t0;
+				j += 1;
+			}
+			b += '</tr>';
+			if (clog.checked) console.log( "#261> b="+b );
+			F.append(b);
+		}
+		//document.getElementById('fontList').innerHTML = outputStr;
+		
+		// xref table...
+		F = $("table#ics");
+		var j = 32;
+		while (j < 768){
+			if (j % 128 == 0){
+				j += 32;
+				//F.append( "<tr style='background:#aa0000;'><td colspan=32></td></tr>" );
+			}
+			else{
+				// row with unicode decimal and hexadecimal values...
+				var b = '';
+				for (var k=0; k<32; k++){
+					var c = j + k;
+					b += "<td class='u'>"+c+"<br><em>"+c.toString(16)+"</em></td>";
+				}
+				F.append( "<tr class='icsc'>"+b+"</tr>" );
+				
+				// row with 7 bit chars in default monospace font.
+				b = '';
+				for (var k=0; k<32; k++){
+					var c = (j + k) % 128;
+					b += "<td>"+String.fromCharCode(c)+"</td>";
+				}
+				F.append( "<tr class='ics0'>"+b+"</tr>" );
+				
+				// row with chars in selected font.
+				b = '';
+				for (var k=0; k<32; k++){
+					b += "<td>"+String.fromCharCode(j)+"</td>";
+					j += 1;
+				}
+				F.append( "<tr class='ics1'>"+b+"</tr>" );
+			}
+			F.append( "<tr style='background:#aa0000;'><td colspan=32></td></tr>" );
+		}
+		
+		// navigator properities...
+		var S = $("table#navi");
+		var a = [];
+		for (var k in navigator ){ a.push( k ); }
+		var n = a.length;
+		if (n > 0) a.sort( sorter );
+		//console.log( '#306> '+n+' navi: '+a );
+		for (var j=0; j<n; j++){
+			var k = a[j];
+			var p = navigator[k];
+			var c = '';
+			if (! p){
+				p = '?';
+				c = ' grey';
+			}
+			S.append( "<tr><td class='tl'>"+k+"</td><td class='tl"+c+"'>"+p+"</td></tr>" );
+		}
+		//console.log( "#322> navigator.userAgent= '"+navigator.userAgent+"'" );
+		
+		// final init...
+		var S = $("span#mirror1");
+		var m = S.text();
+		mirrorInput.value = m;
+	}
+);
+
+// sorter - sort action wrt a and b with anything following ',' ignored.
+function sorter( a, b ){
+	var j;
+	a = a.toLowerCase(); j = a.indexOf( ',' ); if (j>0) a = a.slice( 0, j );
+	b = b.toLowerCase(); j = b.indexOf( ',' ); if (j>0) b = b.slice( 0, j );
+	return a.localeCompare( b );
+}
+
+function changeFont(prop,value) {
+	var P = $("span#example");
+	P.css(prop,value);
+	
+	if (value.search( ' ' ) > 0) value = '"'+value+'"';
+	var s = P.css("font-style");
+	var w = P.css("font-weight");
+	var z = P.css("font-size");
+	var h = P.css("line-height");
+	var f = P.css("font-family");
+	
+	var S = $("span#choice");
+	S.html( "<i style='color:#0000ff;'>"+prop+"</i> <b style='color:#009900;'>"+value+"</b>");
+	
+	S = $("span#result");
+	S.text( s+" "+w+" "+z+"/"+h+" "+f );
+	
+	S = $("span#ffname");
+	S.text( f );
+
+	S = $("tr.ics1");
+	//S.css("font-style",		s );
+	//S.css("font-weight",	w );
+	//S.css("font-size",		z );
+	//S.css("line-height",	h );
+	S.css("font-family",	f );
+	
+}
+
+//function ffselect(selectTag,prop) {
+//	var j = selectTag.selectedIndex;
+//	var v = selectTag.options[j].text;
+//	var k = v.search( /,/ );
+//	if (k > 0) v = v.slice( 0, k );
+//	changeFont( prop, v+",monospace" );
+//	selectTag.children[j].selected = false;
+//}
+
+function selection(selectTag,prop) {
+	var j = selectTag.selectedIndex;
+    var v = selectTag.options[j].text;
+	var k = v.search( /,/ );
+	if (k > 0) v = v.slice( 0, k );
+	changeFont( prop, v );
+	selectTag.children[j].selected = false;
+}
+
+function xfamily( tmpl, family ){
+	var	v = family;
+	var	j = v.indexOf( ',' );
+	if (j > 0)	v = v.slice( 0, j );
+	else		j = v.length;
+	//var b = '';
+	//while (j > 0){
+	//	b += '-';
+	//	j -= 1;
+	//}
+	tmpl = tmpl.replace( /FAMILY1/g,	v );
+	tmpl = tmpl.replace( /FAMILY2/g,	family );
+	//tmpl = tmpl.replace( /BAR/g,		b );
+	return tmpl;
+}
+
+// bool - convert any 'true' or 'false' value to 1 or 0 boolean value.
+function bool( v ){
+	if (v) return 1;
+	return 0;
+}
+
+// hq - returns given string 's' inside html quote tags.
+//      if 'x' is given, it is appended after a '/' to the result.
+function hq( s, x ){
+	var b = "<q>"+s+"</q>";
+	if (x) b += '/' + x;
+	return b;
+}
+
+// tdx - renders content for given <td id=> with possibly undefined string...
+function tdx( id, str, quote ){
+	var td = $('td#'+id);
+	if (str === undefined){
+		td.css( 'background', '#aaaaaa' );
+		td.html( '' );
+	}
+	else if (quote){
+		td.css( 'background', '#ffffff' );
+		td.html( hq(str) );
+	}
+	else{
+		td.css( 'background', '#ffffff' );
+		td.html( str );
+	}
+}
+
+// set Color
+function setColor( id, event ){
+	// if event is defined...
+	if (event !== undefined){
+		// if key up is not Enter... return.
+		var ec = event.code;
+		var ki = event.keyIdentifier;
+		if (ec === undefined  &&  ki !== undefined  &&  ! /^U[+]/i.test(ki))
+			ec = ki;
+		if (ec === undefined)
+			ec = event.key;
+		if (! /enter/i.test(ec))
+			return;
+	}
+
+	// get color and reset example.
+    var v = id.value;
+	if (clog.checked) console.log( '#448> color='+v );
+	example.style.color = v;
+}
+
+// set UniCode Range
+var ucr = 0;
+function setUCR( id ){
+	ucr = id.value;
+	if (clog.checked) console.log( '#449> ucr='+ucr );
+}
+
+function resetAll(){
+	clog.checked =	false;
+	changeFont( 'font-style',	'' );
+	changeFont( 'font-weight',	'' );
+	changeFont( 'font-size',	'' );
+	changeFont( 'line-height',	'' );
+	changeFont( 'font-family',	'' );
+	ucRngDefault.checked = true;
+	setUCR( ucRngDefault );
+	xcolor.value = '#000000';
+	setColor( xcolor );
+}
+
+// mirror - mirror input from id=mirrorInput to span#mirror1...
+// event: must be for <INPUT type=text>. if Alt Key is held, key is shifted to 8th bit, i.e.
+//        128 is added to the typed key's key code.
+var ek = 0;									// mirror event count
+function mirror( event ){
+	ek += 1;								// increment mirror event count
+	var t	= mirrorInput.value;			// current Mirror Input string (after insertion)
+	var ss	= mirrorInput.selectionStart;	// # chars before selection  or insert column
+	var se	= mirrorInput.selectionEnd;		// # chars before select end or insert column
+	var k	= event.key;					// char entered (undef on Chrome)
+	var ki	= event.keyIdentifier;			// key identifier name (Chrome only)
+	var ec	= event.code;					// keyboard button code, eg 'End' (undef on IE)
+	var w	= t.length;						// width of current input value.
+	var j	= ( ss > 0 ? t.substr( ss-1, 1 ) : '' );	// char just before start of selection
+
+	tdx( 'rCount',			ek );
+	tdx( 'rInput',			t );
+	tdx( 'rWidth',			w );
+	tdx( 'rUCrng',			ucr );
+	tdx( 'rSelect',			ss+'-'+se );
+	tdx( 'rChar',			j, 1 );
+	tdx( 'riChr',			j.charCodeAt(0) );
+
+	tdx( 'rtype',			event.type );
+	tdx( 'rchar',			event.char );
+	tdx( 'rcharCode',		event.charCode );
+	tdx( 'rcode',			event.code );
+	tdx( 'rdetail',			event.detail );
+	tdx( 'risChar',			event.isChar );
+	tdx( 'rkey',			event.key, 1 );
+	tdx( 'rkeyCode',		event.keyCode );
+	tdx( 'rkeyIdentifier',	ki );
+	tdx( 'rlocation',		event.location );
+	tdx( 'rwhich',			event.which );
+	
+	// ensure event is keyup...
+	if	(event.type != 'keyup')
+		return;
+
+	var m = 0;						// >0 => Moving/Modifier (non-char) event flag
+
+	// Use Chrome's event.keyIdentifier for event code if if it does not begin with 'U+'...
+	// 		Chrome's event.keyIdentifier is better than Chrome's event.code then. 
+	if (ki !== undefined  &&  ! /^U[+]/i.test(ki))
+		ec = ki;
+
+	// IE leaves event code undefined, get it from event key.
+	if (ec === undefined){
+		ec = k;
+		// if event code still undefined, consider this event a non-char event.
+		if (ec === undefined)
+			m = 496;
+	}
+
+	// eval event code for non-char events...
+	var x = ec.toLowerCase();
+	if	(  /^f\d+$/.test(x)			// function key, ie: F1 .. F12
+		|| /^numpaddecimal/.test(x)
+		|| /^backspace/.test(x)
+		|| /^numlock/.test(x)
+		|| /^control/.test(x)
+		|| /^return/.test(x)
+		|| /^insert/.test(x)
+		|| /^delete/.test(x)
+		|| /^shift/.test(x)
+		|| /^right/.test(x)
+		|| /^pause/.test(x)
+		|| /^enter/.test(x)
+		|| /^clear/.test(x)
+		|| /^arrow/.test(x)
+		|| /^page/.test(x)
+		|| /^meta/.test(x)
+		|| /^left/.test(x)
+		|| /^home/.test(x)
+		|| /^down/.test(x)
+		|| /^caps/.test(x)
+		|| /^end/.test(x)	
+		|| /^alt/.test(x)	
+		|| /^up/.test(x)
+		|| /^os/.test(x)
+		){
+		m = 527;		// non-char moving/modifier event
+	}
+
+	// if still possibly a char event but 'k'ey is undef (Chrome leaves event key undefined)...
+	if (! m  &&  k === undefined){
+		// use selection from input string for 'k'ey.
+		k = t.substr( ss-1, 1 );	// using char just before selection
+		if (k === undefined)		// if still undef... consider event as non-char
+			m = 536;
+	}
+		
+	// if still possibly a char event... eval 'k'ey length.
+	var n = 0;						// default 'k'ey length
+	if (! m)
+		n = k.length;				// 'k'ey length
+	
+	// if still possibly a char event but 'k' is longer than 1 char...
+	if (! m  &&  n > 1){
+		// test 'k'ey to translate multi-char key names to a single character.
+		var x = k.toLowerCase();
+		if    	(/^add/.test(x))		k = '+';
+		else if	(/^slash/.test(x))		k = '/';
+		else if	(/^space/.test(x))		k = ' ';
+		else if	(/^divide/.test(x))		k = '/';
+		else if	(/^multiply/.test(x))	k = '*';
+		else if	(/^subtract/.test(x))	k = '-';
+		// re-eval k's length after possible interpretation above.
+		n = k.length;
+	}
+	
+	// if k is now 1 char... eval k's char code.
+	var c = -99;						// default char code
+	if (n == 1)
+		c = k.charCodeAt(0);			// char code
+
+	// build log message
+	var x =	sprintf
+		( "%d %s (acms8:%d.%d.%d.%d.%d) ec=%s '%s'(%d), m=%d, t='%s', sel %d-%d/%d"
+		, ek, event.type
+		, bool(event.altKey)
+		, bool(event.ctrlKey)
+		, bool(event.metaKey)
+		, bool(event.shiftKey)
+		, ucr
+		, ec, k,  c,  m
+		, t,  ss, se, w
+		);
+
+	// event label background colors...
+	var bg0 = '#f4eaea';	// previous event
+	var bg1 = '#44ffaa';	// '#ffdd77';	// current  event
+
+	// ignore modifier/move key up events such as Shift, Meta, Control, Alt, etc...
+	if	(  m
+		|| c <  32
+		|| n != 1
+		|| k == ''
+		){
+		x = "#582> "+x;
+		//var S = $("code#mirror2");
+		//S.html( x );
+		$('td#nEvent').text( event.type );
+		$('td#nCount').text( ek );
+		$( 'q#nInput').text( t );
+		$('td#nWidth').text( w );
+		$('td#nSelec').text( ss+"-"+se );
+		$('td#nCode' ).text( ec );
+		$('td#nKey'  ).text( k );
+		$('td#niChr' ).text( c );
+		$('td#nAlt'  ).text( bool(event.altKey) );
+		$('td#nCtrl' ).text( bool(event.ctrlKey) );
+		$('td#nMeta' ).text( bool(event.metaKey) );
+		$('td#nShift').text( bool(event.shiftKey) );
+		$('td#nUCrng' ).text( ucr );
+		$('td#nm'    ).text( m );
+		//$('td#nKey8' ).text( '' );
+		//$('td#niChr8').text( '' );
+		//$('td#nResul').text( '' );
+		$('th#nLabel').css( 'background', bg1 );
+		$('th#cLabel').css( 'background', bg0 );
+	}
+	
+	else if (ucr){
+		$('td#cEvent').text( event.type );
+		$('td#cCount').text( ek );
+		$( 'q#cInput').text( t );
+		$('td#cWidth').text( w );
+		$('td#cSelec').text( ss+"-"+se );
+		$('td#cCode' ).text( ec );
+		$('td#cKey'  ).html( hq(k,n) );
+		$('td#ciChr' ).text( c );
+		$('td#cAlt'  ).text( bool(event.altKey) );
+		$('td#cCtrl' ).text( bool(event.ctrlKey) );
+		$('td#cMeta' ).text( bool(event.metaKey) );
+		$('td#cShift').text( bool(event.shiftKey) );
+		$('td#cUCrng' ).text( ucr );
+		$('td#cm'    ).text( m );
+		// note: typed char will not appear in mirror input so it must be inserted. This also
+		//       affects the length and cursor position.
+		c += ucr*128;						// shift to 8bit char to replace typed char.
+		var b = '';							// buffer to receive new mirror output value
+		var C = String.fromCharCode( c );	// shift to 8bit char to replace typed char.
+		if (ss > 0){						// append any prefix to typed char.
+			b += t.slice( 0, ss-1 );
+		}
+		b += C;								// append shifted char
+		//b += "("+event.keyCode+")";
+		if (se < w){						// append any suffix following typed char.
+			b += t.slice( se );
+		}
+		t = b;								// replace text to write to mirror with shifted text.
+		mirrorInput.value = b;				// replace mirror input with new key char inserted.
+		mirrorInput.selectionStart = mirrorInput.selectionEnd = ss;// move cursor to after insert.
+		x = "#635> "+x+sprintf( ", c8 '%s'(%d) '%s'", C, c, t );
+		//var S = $("code#mirror3");
+		//S.html( x );
+		$('td#cKey8' ).html( hq(C) );
+		$('td#ciChr8').text( c );
+		$('td#cResul').html( hq(t) );
+		$('th#cLabel').css( 'background', bg1 );
+		$('th#nLabel').css( 'background', bg0 );
+	}
+
+	else{
+		x = "#646> "+x;
+		//var S = $("code#mirror3");
+		//S.html( x );
+		$('td#cEvent').text( event.type );
+		$('td#cCount').text( ek );
+		$( 'q#cInput').text( t );
+		$('td#cWidth').text( w );
+		$('td#cSelec').text( ss+"-"+se );
+		$('td#cCode' ).text( ec );
+		$('td#cKey'  ).html( hq(k,n) );
+		$('td#ciChr' ).text( c );
+		$('td#cAlt'  ).text( bool(event.altKey) );
+		$('td#cCtrl' ).text( bool(event.ctrlKey) );
+		$('td#cMeta' ).text( bool(event.metaKey) );
+		$('td#cShift').text( bool(event.shiftKey) );
+		$('td#cUCrng').text( ucr );
+		$('td#cm'    ).text( m );
+		$('td#cKey8' ).text( '' );
+		$('td#ciChr8').text( '' );
+		$('td#cResul').html( hq(t) );
+		$('th#cLabel').css( 'background', bg1 );
+		$('th#nLabel').css( 'background', bg0 );
+	}
+
+	var S = $("span#mirror1");
+	S.html( t );
+	if (clog.checked) console.log( x );
+}
+	
+ // sprintf - print args to text string wrt given format with limited conversions
+ // string = sprintf( format, args... );
+ //		conversions:
+ //		%%		literal '%'
+ //		%s		String
+ //		%d		Integer (will floor floating point)
+ //		%f		Floating Point (will not truncate decimals)
+ //		%.nf	Floating Point with 'n' digits after the decimal.
+function sprintf() {
+	var args	= arguments;
+	var nargs	= args.length;
+	var format	= args[0];
+	var	i		= 1;
+	var	b		= format.replace(/%((%)|s|d|[-.\d]*f)/g, function (m) {
+		// m is the matched sub-string, i.e. the format, e.g. %s, %d, %
+		var val = m;
+		var n	= m.length;
+		var c	= m[n-1];
+		// console.log( "#521> m='"+m+"'/"+n+", args["+i+"]='"+args[i]+"', c='"+c+"'" );
+		// conversions without args first...
+		if (m == '%%'){
+			val = '%';
+			// effectively do not increment i since '%%' does not expect an arg.
+			i -= 1;
+		}
+		// conversions that require an arg follow test for more args...
+		else if (i >= nargs){
+			val = '****';
+		}
+		else if (m == '%d') {
+			val = parseFloat( args[i] );
+			if (isNaN(val))	val = 'NaN';
+			else			val = Math.floor( val );
+		}
+		else if (c == 'f') {
+			val = parseFloat( args[i] );
+			// if not a number...
+			if (isNaN(val)){
+				val = 'NaN';
+			}
+			// else if format specified number of decimals...
+			else if (n != 2  &&  m[1] == '.'){
+				// get number of decimals and fix it.
+				k = m.slice( 2 );
+				k = parseFloat( k );
+				// console.log( "#549> k="+k );
+				if (k >= 0) val = val.toFixed( k );
+			}
+		}
+		else if (c == 's') {
+			val = args[i];
+		}
+		// increment index for next arg...
+		i += 1;
+		return val;
+	});
+	if		(i > nargs)	console.log( "ERROR-sprintf-560-Insufficient Args for: '"+format+"'" );
+	else if	(i < nargs)	console.log( "WARNING-sprintf-561-Extra Args for: '"+format+"'" );
+	return b;
+}
+
+	// set font-family on button Press or <Enter> key Up event...
+function setFF( event ){
+	var v = fontFamily.value;
+	if (! v) v = '';	// ensure value is not indefinite.
+	var t = 0;	// font change trigger, default to NO.
+	// if click event... trigger font change.
+	if (event.type == 'click')		t = 1;
+	// if not keyup event... NO font change.
+	else if (event.type != 'keyup')	t = -2;
+	// if key Code is 13 (\n)... trigger font change.
+	else if (event.keyCode == 13)	t = 2;
+
+	// if trigger is set... strip any ', <tag>' and change font.
+	if (t > 0){
+		var k = v.search( /,/ );
+		if (k > 0) v = v.slice( 0, k );
+		changeFont( 'font-family', v );
+	}
+	
+	if (clog.checked){
+		var b = "#585> "+event.target.localName+"#"+event.target.id+" event: type='"+event.type
+			  +"' (acs "+event.altKey+"."+event.ctrlKey+"."+event.shiftKey+")";
+		if (event.type == 'keyup')	b += ", keyCode '"+event.keyCode;
+		b += '; t='+t+', v='+v
+		console.log( b );
+	}
+}
+
+//function lineSize(selectTag) {
+//	var v = selectTag.options[selectTag.selectedIndex].text;
+//	var P = $("span#example");
+//	var z = P.css("font-size");
+//	changeFont( "font-size", z+v );
+//}
+
+</script>
+</head>
+
+<body>
+<center>
+
+<object id="dlgHelper" classid="clsid:3050F819-98B5-11CF-BB82-00AA00BDCE0B" width="0px" height="0px">
+</object>
+
+<b><big><big>Font Query</big></big></b><br>
+
+<table border=1 cellspacing=0>
+ <tr>
+  <th>Style</th>
+  <th>Weight</th>
+  <th>Size</th>
+  <th>Safe<br>Family</th>
+  <th>IE<br>Family</th>
+  <th>Other<br>Family</th>
+  <th>Line<br>Height</th>
+  <th>Rendering Example</th>
+ </tr>
+ 
+ <tr>
+
+  <td valign='top' rowspan=2>
+   <select id="style" onchange="selection(this,'font-style');" size="20">
+    <option></option>
+    <option>Normal</option>
+    <option>Italic</option>
+    <option>Oblique</option>
+   </select>
+  </td>
+
+  <td valign='top' rowspan=2>
+   <select id="weight" onchange="selection(this,'font-weight');" size="20">
+    <option></option>
+    <option>Lighter</option>
+    <option>Normal</option>
+    <option>Bold</option>
+    <option>Bolder</option>
+    <option>800</option>
+   </select>
+  </td>
+
+  <td valign='top' rowspan=2>
+   <select id="size" onchange="selection(this,'font-size');" size="20">
+    <option></option>
+   </select>
+  </td>
+
+  <td valign='top' rowspan=2>
+   <select id="safeFamily" onchange="selection(this,'font-family');" size="20">
+    <option></option>
+    <option>serif</option>
+    <option>sans-serif</option>
+    <option>monospace</option>
+    <option>cursive, *</option>
+    <option>script, *</option>
+    <option>decorative, *</option>
+    <option>fantasy, *</option>
+   </select>
+  </td>
+
+  <td valign='top' rowspan=2>
+   <select id="ieFamily" onchange="selection(this,'font-family');" size="20">
+   </select>
+  </td>
+  
+  <td valign='top' rowspan=2>
+   <select id="otherFamily" onchange="selection(this,'font-family');" size="20">
+   </select>
+  </td>
+
+  <td valign='top' rowspan=2>
+   <select id="line" onchange="selection(this,'line-height');" size="20">
+    <option></option>
+    <option>normal</option>
+   </select>
+  </td>
+
+  <td  class="tl" height='1%' style='background:#eef7ff;'>
+   &nbsp;Choice:       <span id='choice'></span>&nbsp;<br>
+   &nbsp;Result:&nbsp; '<b><span id='result' style='color:#009900;'></span></b>'&nbsp;
+  </td>
+ 
+ </tr>
+ 
+ <tr>
+  <td class="tl" ><span id='example'>
+   &nbsp;<span id='ffname' class='redfg'>font-family name</span>&nbsp;<br>
+   &nbsp;A B C D E F G H I J K L M N O P Q R S T U V W X Y Z&nbsp;<br>
+   &nbsp;a b c d e f g h i j k l m n o p q r s t u v w x y z&nbsp;<br>
+   &nbsp;0 1 2 3 4 5 6 7 8 9&nbsp;<br>
+   &nbsp;) ! @ # $ % ^ &amp; * (&nbsp;<br>
+   &nbsp;` - = [ ] \ ; ' , . /&nbsp;<br>
+   &nbsp;~ _ + { } | : "&lt; &gt; ?&nbsp;<br>
+   &nbsp;<br>
+   &nbsp;<b>Bold.. Text</b>&nbsp;<br>
+   &nbsp;<i>Italic Text</i>&nbsp;<br>
+   &nbsp;<br>
+   When a font-family is followed by "<b class='redfg'>,*</b>",
+   it indicates that the font-family is likely not supported on this Browser/OS.
+   When followed by "<b class='redfg'>,MONO</b>", it indicates that this family is usually fixed width but it may not be on this Browser/OS.
+   Typically, selecting an unsupported font results in no change or a default font...
+   check the Result and Rendering above to confirm. 
+   Note that some Browsers (like IE) may not indicate the actual resulting font-family.
+   <br><br>
+   <span id='mirror1'>Mirror</span><br>
+   </span>
+  </td>
+ </tr>
+</table>
+
+<small style='color:#0000bb'><i><b>
+Note: When a font-family is followed by "<big><b class='redfg'>,*</b></big>",
+it indicates that the family is likely not supported on this Browser/OS. When 
+followed by "<big><b class='redfg'>,MONO</b></big>", it indicates that this
+family is usually fixed width but it may not be on this Browser/OS.
+</b></i></small>
+
+<hr>
+<div style='margin-width: 0 0 10px 0;'>
+<i><b>
+<button	type="button" onclick="resetAll();">Reset&nbsp;All</button> &nbsp; 
+<button	type="button" onclick="setFF(event,1);">Set&nbsp;Font&nbsp;Family</button>
+<input type='text'	id="fontFamily"		size=20	onkeyup="setFF(event,0);"/>
+&nbsp; 
+Color
+<input type='color'	id='xcolor'			size=7	onchange="setColor(this)"	onkeyup="setColor(this,event)"/>
+</b></i>&nbsp; 
+<input type='checkbox' id='clog' checked='false' defaultChecked='false'/>
+Log
+</div>
+
+<hr>
+
+<b style="font-size:20px;">Mirror</b>
+<input type='text'	id="mirrorInput"	size=20	onkeyup="mirror( event );"	value="Mirror"/>
+&nbsp; 
+Unicode
+<input type='radio' name='ucRng' value=0 onclick="setUCR(this)" id='ucRngDefault'>0..
+<input type='radio' name='ucRng' value=1 onclick="setUCR(this)">128..
+<input type='radio' name='ucRng' value=2 onclick="setUCR(this)">256..
+<input type='radio' name='ucRng' value=3 onclick="setUCR(this)">416..
+<input type='radio' name='ucRng' value=4 onclick="setUCR(this)">512..
+<input type='radio' name='ucRng' value=5 onclick="setUCR(this)">640..767
+
+<table border=0 cellspacing=0 cellpadding=3 width='90%' style='margin: 8px 0 0 0;'>
+ <tr>
+  <th>Count</th>
+  <th style='width:200px;'>Input</th>
+  <th>Width</th>
+  <th>UCrng</th>
+  <th>Select</th>
+  <th>Char</th>
+  <th>iChr</th>
+  <td style='border:0;'></td>
+  <th>type</th>
+  <th>char</th>
+  <th>charCode</th>
+  <th style='width:100px;'>code</th>
+  <th>detail</th>
+  <th>isChar</th>
+  <th style='width:100px;'>key</th>
+  <th>keyCode</th>
+  <th style='width:100px;'>keyIdentifier</th>
+  <th>location</th>
+  <th>which</th>
+ </tr>
+ <tr>
+  <td id='rCount'>&nbsp;</td>
+  <td id='rInput' style='width:200px;'></td>
+  <td id='rWidth'></td>
+  <td id='rUCrng'></td>
+  <td id='rSelect'></td>
+  <td id='rChar'></td>
+  <td id='riChr'></td>
+  <td style='border:0;'></td>
+  <td id='rtype'></td>
+  <td id='rchar'></td>
+  <td id='rcharCode'></td>
+  <td id='rcode'></td>
+  <td id='rdetail'></td>
+  <td id='risChar'></td>
+  <td id='rkey'></td>
+  <td id='rkeyCode'></td>
+  <td id='rkeyIdentifier'></td>
+  <td id='rlocation'></td>
+  <td id='rwhich'></td>
+ </tr>
+</table>
+
+<table border=0 cellspacing=0 cellpadding=3 width='90%' style='margin: 8px 0 0 0;'>
+ <tr>
+  <th style='color:#0000cc; background-color:#ddffff;'><i>Mirror Event</i></th>
+  <th>Type</th>
+  <th>Count</th>
+  <th style='width:200px;'>Input</th>
+  <th>Width</th>
+  <th>Select</th>
+  <th style='width:100px;'>Code</th>
+  <th style='width:100px;'>Key</th>
+  <th>iChr</th>
+  <th>Alt</th>
+  <th>Ctrl</th>
+  <th>Meta</th>
+  <th>Shift</th>
+  <th>UCrng</th>
+  <th style='width:20px;'> m </th>
+  <th>Key8</th>
+  <th>iChr8</th>
+  <th style='width:200px;'>Result</th>
+ </tr>
+ <tr>
+  <th id='nLabel'>Non&nbsp;Char</th>
+  <td id='nEvent'></td>
+  <td id='nCount'></td>
+  <td><q id='nInput'></q></td>
+  <td id='nWidth'></td>
+  <td id='nSelec'></td>
+  <td id='nCode'></td>
+  <td id='nKey'></td>
+  <td id='niChr'></td>
+  <td id='nAlt'></td>
+  <td id='nCtrl'></td>
+  <td id='nMeta'></td>
+  <td id='nShift'></td>
+  <td id='nUCrng'></td>
+  <td id='nm'></td>
+  <td></td>
+  <td></td>
+  <td></td>
+ </tr>
+ <tr>
+  <th id='cLabel'>Character</th>
+  <td id='cEvent'></td>
+  <td id='cCount'></td>
+  <td><q id='cInput'></q></td>
+  <td id='cWidth'></td>
+  <td id='cSelec'></td>
+  <td id='cCode'></td>
+  <td id='cKey'></td>
+  <td id='ciChr'></td>
+  <td id='cAlt'></td>
+  <td id='cCtrl'></td>
+  <td id='cMeta'></td>
+  <td id='cShift'></td>
+  <td id='cUCrng'></td>
+  <td id='cm'></td>
+  <td id='cKey8'></td>
+  <td id='ciChr8'></td>
+  <td id='cResul'></td>
+ </tr>
+</table>
+
+<hr>
+<table id='ics' cellpadding=1 cellspacing=0>
+ <tr>
+  <th colspan=32>
+	Unicode/Char to Font
+	<i><span id='result' class='redfg'>selected</span></i>&nbsp;
+	<em>(xx-large)</em> Glyph Cross Reference
+  </th>
+ </tr>
+</table>
+
+<hr>
+<table id="fontList" border=1 cellpadding=2 cellspacing=0>
+</table>
+
+<hr>
+<table id="navi" border=0 cellpadding=2 cellspacing=0>
+ <tr>
+  <td colspan=2 style='background:#cce7ff'><big><b>'<i>navigator</i>' Object</b></big></td>
+ </tr>
+ <tr>
+  <th>Key</th>
+  <th>Property</th>
+ </tr>
+</table>
+
+</center>
+</body>
+</html>
